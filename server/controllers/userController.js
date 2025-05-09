@@ -59,7 +59,7 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
 	try {
 		const { id } = req.params;
-		const { name, emai, password } = req.body;
+		const { name, email, password } = req.body;
 		const user = await userModel.findByIdAndUpdate(
 			id,
 			{
@@ -80,7 +80,12 @@ const updateUser = async (req, res) => {
 			success: true,
 			data: user,
 		});
-	} catch (error) {}
+	} catch (error) {
+		res.status(500).json({
+			message: `Internal server error,${error.message}`,
+			success: false,
+		});
+	}
 };
 const deleteUser = async (req, res) => {
 	try {
