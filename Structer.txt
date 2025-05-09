@@ -1,0 +1,19 @@
+mern-crud-app/
+│
+├── client/             # React Frontend
+│   ├── public/
+│   └── src/
+│       ├── components/     # Reusable components like UserForm, UserList
+│       ├── pages/          # Pages like Home.js, EditUser.js
+│       ├── App.js
+│       └── index.js
+│
+├── server/             # Node.js + Express Backend
+│   ├── controllers/    # Logic for handling requests
+│   ├── models/         # Mongoose schemas
+│   ├── routes/         # Express routes
+│   ├── .env            # For DB URI and port
+│   ├── server.js       # Entry point
+│
+├── package.json        # Root-level: manage both frontend and backend scripts
+└── README.md
