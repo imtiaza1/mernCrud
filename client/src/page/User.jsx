@@ -1,8 +1,8 @@
 import { PencilAltIcon, TrashIcon, EyeIcon } from "@heroicons/react/solid";
 import { useState, useEffect } from "react";
-import Button from "@mui/material/Button";
 import Message from "../utils";
 import Spinner from "../Spinner";
+import DetailsDialog from "../DetailsDialog";
 import EditUserDialog from "../EditUserDialog";
 const UserPage = () => {
 	// for Spinner
@@ -83,18 +83,28 @@ const UserPage = () => {
 		const newUser = { ...formUser, [name]: value };
 		setFormUser(newUser);
 	};
-	// handle edit user
-	const [dialogOpen, setDialogOpen] = useState(false);
+	// handle user details
+	const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+	const [userDetails, setUserDetails] = useState(null);
+	const handleClickDetails = (user) => {
+		setUserDetails(user);
+		setDetailsDialogOpen(true);
+	};
+	const handleDetailsDialogClose = () => {
+		setDetailsDialogOpen(false);
+	};
+	// handle edit user and Edit dailog
+	const [editDialogOpen, setDialogOpen] = useState(false);
 	const [selectedUser, setSelectedUser] = useState(null);
 	const handleEditClick = (user) => {
 		setSelectedUser(user);
 		setDialogOpen(true);
 	};
-
-	const handleDialogClose = () => {
+	//handle EditdialogClose
+	const handleEditDialogClose = () => {
 		setDialogOpen(false);
 	};
-
+	//handle update user
 	const handleUserUpdate = async (updatedData) => {
 		// Make your API call here
 		try {
@@ -201,7 +211,10 @@ const UserPage = () => {
 										<p className="text-sm text-zinc-400">{user.email}</p>
 									</div>
 									<div className="flex space-x-4 text-blue-500">
-										<button className="hover:text-blue-300 flex items-center space-x-1">
+										<button
+											onClick={() => handleClickDetails(user)}
+											className="hover:text-blue-300 flex items-center space-x-1"
+										>
 											<EyeIcon className="w-5 h-5" />
 											<span>Details</span>
 										</button>
@@ -222,10 +235,15 @@ const UserPage = () => {
 										</button>
 									</div>
 									<EditUserDialog
-										open={dialogOpen}
-										onClose={handleDialogClose}
+										open={editDialogOpen}
+										onClose={handleEditDialogClose}
 										userData={selectedUser}
 										onSubmit={handleUserUpdate}
+									/>
+									<DetailsDialog
+										DetailsOpen={detailsDialogOpen}
+										DetailsClose={handleDetailsDialogClose}
+										DetailsUser={userDetails}
 									/>
 								</div>
 							);
