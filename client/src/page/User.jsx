@@ -1,8 +1,9 @@
 import { PencilAltIcon, TrashIcon, EyeIcon } from "@heroicons/react/solid";
 import { useState, useEffect } from "react";
+import Button from "@mui/material/Button";
 import Message from "../utils";
 import Spinner from "../Spinner";
-
+import EditUserDialog from "../EditUserDialog";
 const UserPage = () => {
 	// for Spinner
 	const [loading, setLoading] = useState(true);
@@ -81,6 +82,47 @@ const UserPage = () => {
 		const { name, value } = e.target;
 		const newUser = { ...formUser, [name]: value };
 		setFormUser(newUser);
+	};
+	// handle edit user
+	const [dialogOpen, setDialogOpen] = useState(false);
+	const [selectedUser, setSelectedUser] = useState(null);
+	const handleEditClick = (user) => {
+		setSelectedUser(user);
+		setDialogOpen(true);
+	};
+
+	const handleDialogClose = () => {
+		setDialogOpen(false);
+	};
+
+	const handleUserUpdate = async (updatedData) => {
+		// Make your API call here
+		try {
+			const url = `http://localhost:5000/api/users/update/${updatedData._id}`;
+			const { email, name, password } = updatedData;
+			const res = await fetch(url, {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					email,
+					name,
+					password,
+				}),
+			});
+			const data = await res.json();
+			const { success, message } = data;
+			if (success) {
+				Message.handleSuccess(message);
+				getAllUser();
+			}
+			if (!success) {
+				Message.handleError(message);
+			}
+		} catch (error) {
+			console.log("Error while updating user", error.message);
+		}
 	};
 	useEffect(() => {
 		getAllUser();
@@ -163,10 +205,14 @@ const UserPage = () => {
 											<EyeIcon className="w-5 h-5" />
 											<span>Details</span>
 										</button>
-										<button className="hover:text-blue-300 flex items-center space-x-1 text-green-500">
-											<PencilAltIcon className="w-5 h-5 " />
+										<button
+											onClick={() => handleEditClick(user)}
+											className="hover:text-blue-300 flex items-center space-x-1 text-green-500"
+										>
+											<PencilAltIcon className="w-5 h-5" />
 											<span>Edit</span>
 										</button>
+										<EditUserDialog />
 										<button
 											onClick={() => DeleteUser(user._id)}
 											className="hover:text-blue-300 flex items-center space-x-1 text-red-500"
@@ -175,6 +221,12 @@ const UserPage = () => {
 											<span>Delete</span>
 										</button>
 									</div>
+									<EditUserDialog
+										open={dialogOpen}
+										onClose={handleDialogClose}
+										userData={selectedUser}
+										onSubmit={handleUserUpdate}
+									/>
 								</div>
 							);
 						})}
